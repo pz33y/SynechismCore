@@ -2,7 +2,8 @@
 
 ## Latest Release: v16.7 (February 2026)
 
-For more information, refer to the [whitepaper-v16.7.md](link to whitepaper-v16.7.md)
+Full academic white paper (PDF): whitepaper-v16.7.md  
+Live interactive web version: https://synechism-mlttxcsj.manus.space
 
 ### Description
 The evolution from v5.1 to v16.7 showcases significant advancements in the Tokenless Foundation's approach, enabling more robust functionalities and broader applications.
