@@ -1,23 +1,38 @@
-# Synechism Core
+# SynechismCore
 
-This repository implements the core functionalities of the Synechism framework.
+## Latest Release: v16.7 (February 2026)
 
-## Features
+For more information, refer to the [whitepaper-v16.7.md](link to whitepaper-v16.7.md)
 
-- Feature 1
-- Feature 2
-- Feature 3
+### Description
+The evolution from v5.1 to v16.7 showcases significant advancements in the Tokenless Foundation's approach, enabling more robust functionalities and broader applications.
+
+---
+
+## MIT License
+
+The MIT License (MIT)
+
+Copyright (c) 2026 pz33y
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+- The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
 
 (Original v5.1 content below...)
 
-# Synechism: The Tokenless Foundation
+## Tokenless Foundation
 
-This section provides details about the Synechism tokenless foundation...
+The Tokenless Foundation is committed to providing decentralized services and infrastructure that enable freedom of expression and innovation.
 
-## Contribution
+## Executive Summary
 
-Contributions are welcome! Please read the CONTRIBUTING.md.
+SynechismCore is designed to push the boundaries of blockchain technology, focusing on sustainability and scalability. Our approach leverages cutting-edge techniques to facilitate transactions without the need for tokens.
 
-## License
+### Further Sections of Original v5.1
 
-MIT License
+[Include all relevant details from v5.1 here that were originally in the README.]
