@@ -1,4 +1,6 @@
 torch>=2.0.0
+torchdiffeq
 numpy
+scipy
 datasets
 transformers
