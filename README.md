@@ -9,6 +9,11 @@
 
 > **v20.0 — Hybrid architecture fully implemented.** The three components of Eq. 4 are real running code: continuous ODE brain, learned event detector, discrete jump function. KS PDE: **1.43× MAE over Transformer** (5 seeds, std ±0.003). Long-horizon coherence: **19,940 steps** (15.8× beyond LSTM).
 
+**📖 Full Whitepaper & Website:**
+- **[SynechismCore Website](https://synechism-jznepj9g.manus.space)** — Interactive research showcase with visualizations, metrics, and architecture details
+- **[Full Whitepaper PDF](https://github.com/pz33y/SynechismCore/releases/download/v20.0/Synechism_v20_Whitepaper.pdf)** — 26 pages including philosophy, experiments, and About the Author section
+- **[GitHub Release v20.0](https://github.com/pz33y/SynechismCore/releases/tag/v20.0)** — All assets and documentation
+
 ---
 
 ## What Is This?
