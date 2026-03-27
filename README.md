@@ -10,8 +10,8 @@
 
 **📖 Full Whitepaper & Website:**
 - **[SynechismCore Website](https://synechism-jznepj9g.manus.space)** — Interactive research showcase with visualizations, metrics, and architecture details
-- **[Full Whitepaper PDF (v20.1 Premium)](https://github.com/pz33y/SynechismCore/releases/download/v20.1/Synechism_v20_Whitepaper_Premium.pdf)** — 26 pages with hyper-realistic 3D graphics, professional charts, and comprehensive research
-- **[GitHub Release v20.1](https://github.com/pz33y/SynechismCore/releases/tag/v20.1)** — All assets, premium whitepaper PDF, graphics, and documentation
+- **[Full Whitepaper PDF (v20.1 Ultra-Premium)](https://github.com/pz33y/SynechismCore/releases/download/v20.1/Synechism_v20_Whitepaper_Premium_v2.pdf)** — 26 pages with hyper-realistic 3D graphics, professional charts, and comprehensive research
+- **[GitHub Release v20.1](https://github.com/pz33y/SynechismCore/releases/tag/v20.1)** — All assets, ultra-premium whitepaper PDF, graphics, video prompts, and documentation
 
 ---
 
@@ -103,5 +103,15 @@ python run_experiments.py --experiment ks_pde --seeds 42 --epochs 30
 Harris's work is grounded in the philosophical principle of synechism (Charles Sanders Peirce) and pragmatism (William James), translating abstract principles into concrete, working code. His guiding ethical principle: *"I wouldn't make someone do anything I wouldn't do."* His technical principle: *"Build continuous models for a continuous world."
 
 As a member of the Mashantucket Pequot Tribal Nation, Harris carries the resilience of a people who survived near-extinction and rebuilt their nation through sovereignty and determination. This heritage informs his approach to research: honest reporting, open science, and the belief that innovation emerges from confronting reality without institutional prestige.
+
+## Video Generation Prompts
+
+For advertising and social media outreach, use these detailed prompts to generate high-quality videos:
+
+- **General Advertising Video Prompt:** [Link to Video_Generation_Prompts.md#general-advertising-video-prompt](/home/ubuntu/SynechismCore/Video_Generation_Prompts.md#general-advertising-video-prompt)
+- **Facebook Stories Video Prompt:** [Link to Video_Generation_Prompts.md#facebook-stories-video-prompt](/home/ubuntu/SynechismCore/Video_Generation_Prompts.md#facebook-stories-video-prompt)
+- **LinkedIn Video Prompt:** [Link to Video_Generation_Prompts.md#linkedin-video-prompt](/home/ubuntu/SynechismCore/Video_Generation_Prompts.md#linkedin-video-prompt)
+
+---
 
 MIT License · Paul E. Harris IV · 2026
