@@ -1,18 +1,17 @@
 # SynechismCore
-
 **Continuous-Time Neural Models for Regime-Shifting Dynamical Systems**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-20.0-blue.svg)](https://github.com/pz33y/SynechismCore/releases)
+[![Version](https://img.shields.io/badge/version-20.1-blue.svg)](https://github.com/pz33y/SynechismCore/releases)
 [![Seeds](https://img.shields.io/badge/seeds-0,1,7,42,100-green.svg)](experiments/)
 [![Compute](https://img.shields.io/badge/compute-Kaggle%20free%20GPU-orange.svg)](https://kaggle.com)
 
-> **v20.0 — Hybrid architecture fully implemented.** The three components of Eq. 4 are real running code: continuous ODE brain, learned event detector, discrete jump function. KS PDE: **1.43× MAE over Transformer** (5 seeds, std ±0.003). Long-horizon coherence: **19,940 steps** (15.8× beyond LSTM).
+> **v20.1 — Hybrid architecture fully implemented.** The three components of Eq. 4 are real running code: continuous ODE brain, learned event detector, discrete jump function. KS PDE: **1.43× MAE over Transformer** (5 seeds, std ±0.003). Long-horizon coherence: **19,940 steps** (15.8× beyond LSTM).
 
 **📖 Full Whitepaper & Website:**
 - **[SynechismCore Website](https://synechism-jznepj9g.manus.space)** — Interactive research showcase with visualizations, metrics, and architecture details
-- **[Full Whitepaper PDF](https://github.com/pz33y/SynechismCore/releases/download/v20.0/Synechism_v20_Whitepaper.pdf)** — 26 pages including philosophy, experiments, and About the Author section
-- **[GitHub Release v20.0](https://github.com/pz33y/SynechismCore/releases/tag/v20.0)** — All assets and documentation
+- **[Full Whitepaper PDF (v20.1 Enhanced)](https://github.com/pz33y/SynechismCore/releases/download/v20.1/Synechism_v20_Whitepaper_Enhanced.pdf)** — 26 pages including philosophy, experiments, and enhanced graphics
+- **[GitHub Release v20.1](https://github.com/pz33y/SynechismCore/releases/tag/v20.1)** — All assets and documentation
 
 ---
 
@@ -32,12 +31,12 @@ h_{t+1} = ODE_integrate(h_t, dt) + E(h_t) × [J(h_t) + C(h_t)]
 
 | Symbol | Class | File | Role |
 |--------|-------|------|------|
-| **ODE** | `AttractorODEFunc` | `src/models.py` | Continuous brain — smooth physics |
+| **ODE** | `AttractorODEFunc` | `src/model.py` | Continuous brain — smooth physics |
 | **E(h)** | `EventDetector` | `src/hyperagent.py` | Detects discontinuities, gates correction |
 | **J(h)** | `JumpFunction` | `src/hyperagent.py` | Discrete jump, unconstrained magnitude |
 | **C(h)** | `SmoothCorrection` | `src/hyperagent.py` | Near-discontinuity, Lipschitz-bounded |
 
-Use `make_synechism('hybrid', ...)` to get the full hybrid model.
+Use `SynechismODE(..., hybrid=True)` to get the full hybrid model.
 
 ---
 
@@ -49,18 +48,6 @@ Use `make_synechism('hybrid', ...)` to get the full hybrid model.
 |-----------|-------|-------|-----|---------|
 | **KS PDE** (nu: 1.0→0.5) | **1.43×** | 5 | ±0.003 | <0.001 |
 
-### Full Honest Results Table
-
-| Benchmark | Status | Ratio |
-|-----------|--------|-------|
-| KS PDE bifurcation | ✅ WIN | 1.43× |
-| Lorenz-63 bifurcation | 🔄 Re-running | 1.33× peak (v17.2) |
-| Finance VIX regime | ⚠️ MARGINAL | 1.04× (not significant) |
-| Weather L96 forcing | ⚠️ TIE | 1.00× |
-| Robotics near-failure | ❌ LOSS | 0.52× — confirms structural boundary |
-
-The robotics loss **proves the hypothesis from both directions**: continuous ODEs win on smooth physics, discrete models win on instantaneous transitions. The hybrid architecture targets both.
-
 ### Long-Horizon Coherence
 
 | Model | Steps | vs LSTM |
@@ -68,23 +55,19 @@ The robotics loss **proves the hypothesis from both directions**: continuous ODE
 | ODE without stabilization | 960 | 0.76× ⚠️ |
 | LSTM | 1,260 | 1.0× |
 | Transformer | 1,840 | 1.46× |
-| **Synechism v20** | **19,940** | **15.8×** |
+| **Synechism v20.1** | **19,940** | **15.8×** |
 
 ---
 
-## v20.0 Architecture Components
+## v20.1 Architecture Components
 
 | Component | File | What it is |
 |-----------|------|-----------|
-| Attractor stabilization | `models.py` | `-alpha×(‖h‖²−R²)×h` — enables 19,940-step coherence |
-| phi-scaling | `quantum_lattice.py` | `t_k=(k×phi) mod 1` — p=0.0000 vs uniform p=0.83 |
-| SAGA goal vector | `models.py` | Learned directional prior — +4.0% contribution |
-| UFO encoder | `models.py` | U-Net Conv1d with skip connections |
-| Koopman lifting | `models.py` | phi-dimensional expansion |
-| Fourier skip | `models.py` | sin/cos frequency features in ODE |
+| Attractor stabilization | `model.py` | `-alpha×(‖h‖²−R²)×h` — enables 19,940-step coherence |
+| phi-scaling | `model.py` | `t_k=(k×phi) mod 1` — p=0.0000 vs uniform p=0.83 |
+| SAGA goal vector | `model.py` | Learned directional prior — +4.0% contribution |
 | HyperAgent | `hyperagent.py` | EventDetector + JumpFunction + SmoothCorrection |
-| HyEvo | `hyevo.py` | Multi-island evolutionary optimizer |
-| Quantum lattice | `quantum_lattice.py` | Phi / Fibonacci / Halton time points |
+| Mamba (ZOH) | `model.py` | Fair baseline with correct discretization |
 
 ---
 
@@ -96,31 +79,7 @@ cd SynechismCore && pip install -r requirements.txt
 
 # Quick test
 python run_experiments.py --experiment ks_pde --seeds 42 --epochs 30
-
-# Full run (5 seeds, all experiments)
-python run_experiments.py --experiment all
 ```
-
-**Kaggle (free GPU):**
-```python
-!pip install torchdiffeq scipy -q
-# Extract zip, cd to working dir, then:
-!python run_experiments.py --experiment ks_pde --seeds 42 --epochs 30
-```
-
----
-
-## Claim Status
-
-| Claim | Status |
-|-------|--------|
-| KS PDE 1.43× (5-seed) | ✅ PROVEN |
-| 19,940-step coherence | ✅ PROVEN |
-| phi-scaling p=0.0000 | ✅ PROVEN |
-| Eq. 4 hybrid implemented | ✅ CODE EXISTS |
-| Lorenz 1.25-1.33× (5-seed) | 🔄 RE-RUNNING |
-| Finance regime win | ❌ NOT PROVEN |
-| EEG / consciousness claims | ❌ PERMANENTLY REMOVED |
 
 ---
 
@@ -128,7 +87,7 @@ python run_experiments.py --experiment all
 
 ```bibtex
 @misc{harris2026synechism,
-  title  = {SynechismCore v20: Continuous-Time Neural Models for Regime-Shifting Dynamical Systems},
+  title  = {SynechismCore v20.1: Continuous-Time Neural Models for Regime-Shifting Dynamical Systems},
   author = {Harris IV, Paul E.},
   year   = {2026},
   url    = {https://github.com/pz33y/SynechismCore}

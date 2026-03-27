@@ -32,6 +32,13 @@ except ImportError:
     subprocess.run(["pip", "install", "torchdiffeq", "-q"])
     from torchdiffeq import odeint
 
+try:
+    from .hyperagent import HyperAgent
+except ImportError:
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from hyperagent import HyperAgent
 
 PHI = (1 + 5 ** 0.5) / 2  # Golden ratio
 
@@ -88,6 +95,7 @@ class SynechismODE(nn.Module):
         solver: str = 'dopri5',
         rtol: float = 1e-4,
         atol: float = 1e-5,
+        hybrid: bool = False,
     ):
         super().__init__()
         self.pred_steps = pred_steps
@@ -109,6 +117,11 @@ class SynechismODE(nn.Module):
 
         # Decoder
         self.decoder = nn.Linear(hidden, out_dim)
+
+        # Hybrid extension: HyperAgent
+        self.hybrid = hybrid
+        if self.hybrid:
+            self.hyperagent = HyperAgent(hidden)
 
         # phi-scaled integration time points (Weyl equidistribution)
         # t_k = (k * phi) mod 1 for k = 1..pred_steps+1
@@ -153,7 +166,19 @@ class SynechismODE(nn.Module):
             )
 
         # Decode: skip t=0 (initial), take prediction steps
-        preds = self.decoder(h_traj[1:pred_steps + 1])  # (pred_steps, B, out_dim)
+        h_out = h_traj[1:pred_steps + 1] # (pred_steps, B, hidden)
+
+        # Apply hybrid correction if active
+        if self.hybrid:
+            # Correction is applied to the output hidden states
+            # h_{t+1} = ODE_integrate(h_t, dt) + HyperAgent(h_t)
+            # Reshape for hyperagent (L, B, H) -> (L*B, H)
+            L, B, H = h_out.shape
+            h_flat = h_out.reshape(-1, H)
+            correction = self.hyperagent(h_flat)
+            h_out = (h_flat + correction).reshape(L, B, H)
+
+        preds = self.decoder(h_out)  # (pred_steps, B, out_dim)
         return preds.permute(1, 0, 2)  # (B, pred_steps, out_dim)
 
 
@@ -248,3 +273,64 @@ def print_model_comparison(in_dim: int, out_dim: int, hidden: int = 128, pred_st
 if __name__ == "__main__":
     print_model_comparison(in_dim=3, out_dim=3)
     print_model_comparison(in_dim=64, out_dim=64)
+
+# ── Baseline: Mamba (ZOH, fair implementation) ───────────────────────────────
+
+class FairMamba(nn.Module):
+    """
+    Fair Mamba baseline with correct ZOH discretization:
+    dA = exp(dt * A)
+    dB = (exp(dt * A) - I) * A^-1 * B
+    
+    This implementation uses a simplified SSM structure that respects 
+    the continuous-to-discrete transition logic.
+    """
+    def __init__(self, in_dim: int, out_dim: int, hidden: int = 128, pred_steps: int = 20):
+        super().__init__()
+        self.pred_steps = pred_steps
+        self.hidden = hidden
+        
+        self.proj_in = nn.Linear(in_dim, hidden)
+        
+        # SSM Parameters
+        self.A = nn.Parameter(torch.randn(hidden) * 0.1)
+        self.B = nn.Parameter(torch.randn(hidden) * 0.1)
+        self.C = nn.Parameter(torch.randn(hidden) * 0.1)
+        self.D = nn.Parameter(torch.ones(hidden))
+        
+        # Discretization step (learned)
+        self.dt_proj = nn.Linear(hidden, 1)
+        nn.init.constant_(self.dt_proj.bias, -3.0) # start with small dt
+        
+        self.decoder = nn.Linear(hidden, out_dim)
+
+    def forward(self, x: torch.Tensor, pred_steps: int = None) -> torch.Tensor:
+        if pred_steps is None:
+            pred_steps = self.pred_steps
+        B, T, _ = x.shape
+        device = x.device
+        
+        # Initial state from last input
+        h = self.proj_in(x[:, -1, :])
+        
+        preds = []
+        for _ in range(pred_steps):
+            # 1. Discretization
+            dt = torch.exp(self.dt_proj(h)) # (B, 1)
+            
+            # ZOH: dA = exp(dt * A)
+            dA = torch.exp(dt * self.A.unsqueeze(0)) # (B, H)
+            
+            # Simplified dB: (dA - I) * B / A (handle A=0 case with epsilon)
+            dB = (dA - 1.0) * self.B.unsqueeze(0) / (self.A.unsqueeze(0) + 1e-6)
+            
+            # 2. SSM Update: h = dA * h + dB * x
+            # For autoregressive, x is the previous hidden state projection
+            x_step = h 
+            h = dA * h + dB * x_step
+            
+            # 3. Output: y = C * h + D * x
+            y = h * self.C.unsqueeze(0) + x_step * self.D.unsqueeze(0)
+            preds.append(self.decoder(y).unsqueeze(1))
+            
+        return torch.cat(preds, dim=1)
